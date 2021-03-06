@@ -33,5 +33,4 @@ function Session({ timerStatus }) {
     )
   );
 }
-
 export default Session;

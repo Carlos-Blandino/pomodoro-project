@@ -29,6 +29,7 @@ function Pomodoro() {
   const [appData, setAppData] = useState({ ...initialAppData });
   let num = 0;
   const tempData = { ...appData };
+
   useInterval(
     () => {
       // ToDo: Implement what should happen when the timer is running
@@ -43,13 +44,27 @@ function Pomodoro() {
 
   return (
     <div className="pomodoro">
-      <div className="row">
+      <FocusSetting
+        appData={appData}
+        durationType="Focus"
+        focusDurationTime={minutesToDuration(appData.focusDurationTime)}
+        breakDurationTime={minutesToDuration(appData.breakDurationTime)}
+        setAppData={setAppData}
+        testId="duration-focus"
+        decrease="decrease-focus"
+        increase="increase-focus"
+      />
+
+      {/* <div className="row">
         <div className="col">
           <FocusSetting
             appData={appData}
             durationType="Focus"
             durationTime={minutesToDuration(appData.focusDurationTime)}
             setAppData={setAppData}
+            testId="duration-focus"
+            decrease="decrease-focus"
+            increase="increase-focus"
           />
         </div>
         <div className="col">
@@ -59,10 +74,14 @@ function Pomodoro() {
               durationType="Break"
               durationTime={minutesToDuration(appData.breakDurationTime)}
               setAppData={setAppData}
+              testId="duration-break"
+              decrease="decrease-break"
+              increase="increase-break"
             />
           </div>
         </div>
       </div>
+      */}
       <div className="row">
         <div className="col">
           <div
