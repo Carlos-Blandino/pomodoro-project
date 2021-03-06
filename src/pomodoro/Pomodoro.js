@@ -1,21 +1,38 @@
 import React, { useState } from "react";
-import FocusControl from "../focus-control/control";
+import FocusSetting from "../focus-setting/FocusSetting";
 import classNames from "../utils/class-names";
+import { minutesToDuration } from "../utils/duration";
 import useInterval from "../utils/useInterval";
+import Session from "../session/Session";
 
 function Pomodoro() {
   // Timer starts out paused
   const [isTimerRunning, setIsTimerRunning] = useState(false);
+
   const initialAppData = {
-    focusDurationTime: "25:00",
-    breakDurationTime: "5:00",
+    focusDurationTime: 25,
+    breakDurationTime: 5,
+    timerStatus: "stop",
+  };
+
+  const handlePlayButton = () => {
+    tempData.timerStatus = "active";
+    setAppData({ ...tempData });
+  };
+
+  const handleStopButton = () => {
+    tempData.timerStatus = "stop";
+    setAppData({ ...initialAppData });
+    setIsTimerRunning(false);
   };
 
   const [appData, setAppData] = useState({ ...initialAppData });
-
+  let num = 0;
+  const tempData = { ...appData };
   useInterval(
     () => {
       // ToDo: Implement what should happen when the timer is running
+      console.log(num++);
     },
     isTimerRunning ? 1000 : null
   );
@@ -28,19 +45,19 @@ function Pomodoro() {
     <div className="pomodoro">
       <div className="row">
         <div className="col">
-          <FocusControl
+          <FocusSetting
             appData={appData}
-            durationType="focus"
-            durationTime={appData.focusDurationTime}
+            durationType="Focus"
+            durationTime={minutesToDuration(appData.focusDurationTime)}
             setAppData={setAppData}
           />
         </div>
         <div className="col">
           <div className="float-right">
-            <FocusControl
+            <FocusSetting
               appData={appData}
-              durationType="break"
-              durationTime={appData.breakDurationTime}
+              durationType="Break"
+              durationTime={minutesToDuration(appData.breakDurationTime)}
               setAppData={setAppData}
             />
           </div>
@@ -66,6 +83,7 @@ function Pomodoro() {
                   "oi-media-play": !isTimerRunning,
                   "oi-media-pause": isTimerRunning,
                 })}
+                onClick={handlePlayButton}
               />
             </button>
             {/* TODO: Implement stopping the current focus or break session and disable when there is no active session */}
@@ -74,38 +92,12 @@ function Pomodoro() {
               className="btn btn-secondary"
               title="Stop the session"
             >
-              <span className="oi oi-media-stop" />
+              <span className="oi oi-media-stop" onClick={handleStopButton} />
             </button>
           </div>
         </div>
       </div>
-      <div>
-        {/* TODO: This area should show only when a focus or break session is running or pauses */}
-        <div className="row mb-2">
-          <div className="col">
-            {/* TODO: Update message below to include current session (Focusing or On Break) and total duration */}
-            <h2 data-testid="session-title">Focusing for 25:00 minutes</h2>
-            {/* TODO: Update message below to include time remaining in the current session */}
-            <p className="lead" data-testid="session-sub-title">
-              25:00 remaining
-            </p>
-          </div>
-        </div>
-        <div className="row mb-2">
-          <div className="col">
-            <div className="progress" style={{ height: "20px" }}>
-              <div
-                className="progress-bar"
-                role="progressbar"
-                aria-valuemin="0"
-                aria-valuemax="100"
-                aria-valuenow="0" // TODO: Increase aria-valuenow as elapsed time increases
-                style={{ width: "0%" }} // TODO: Increase width % as elapsed time increases
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+      <Session timerStatus={appData.timerStatus} />
     </div>
   );
 }
