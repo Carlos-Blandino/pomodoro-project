@@ -1,10 +1,17 @@
 import React, { useState } from "react";
+import FocusControl from "../focus-control/control";
 import classNames from "../utils/class-names";
 import useInterval from "../utils/useInterval";
 
 function Pomodoro() {
   // Timer starts out paused
   const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const initialAppData = {
+    focusDurationTime: "25:00",
+    breakDurationTime: "5:00",
+  };
+
+  const [appData, setAppData] = useState({ ...initialAppData });
 
   useInterval(
     () => {
@@ -21,57 +28,21 @@ function Pomodoro() {
     <div className="pomodoro">
       <div className="row">
         <div className="col">
-          <div className="input-group input-group-lg mb-2">
-            <span className="input-group-text" data-testid="duration-focus">
-              {/* TODO: Update this text to display the current focus session duration */}
-              Focus Duration: 25:00
-            </span>
-            <div className="input-group-append">
-              {/* TODO: Implement decreasing focus duration and disable during a focus or break session */}
-              <button
-                type="button"
-                className="btn btn-secondary"
-                data-testid="decrease-focus"
-              >
-                <span className="oi oi-minus" />
-              </button>
-              {/* TODO: Implement increasing focus duration  and disable during a focus or break session */}
-              <button
-                type="button"
-                className="btn btn-secondary"
-                data-testid="increase-focus"
-              >
-                <span className="oi oi-plus" />
-              </button>
-            </div>
-          </div>
+          <FocusControl
+            appData={appData}
+            durationType="focus"
+            durationTime={appData.focusDurationTime}
+            setAppData={setAppData}
+          />
         </div>
         <div className="col">
           <div className="float-right">
-            <div className="input-group input-group-lg mb-2">
-              <span className="input-group-text" data-testid="duration-break">
-                {/* TODO: Update this text to display the current break session duration */}
-                Break Duration: 05:00
-              </span>
-              <div className="input-group-append">
-                {/* TODO: Implement decreasing break duration and disable during a focus or break session*/}
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  data-testid="decrease-break"
-                >
-                  <span className="oi oi-minus" />
-                </button>
-                {/* TODO: Implement increasing break duration and disable during a focus or break session*/}
-                <button
-                  type="button"
-                  className="btn btn-secondary"
-                  data-testid="increase-break"
-                >
-                  <span className="oi oi-plus" />
-                </button>
-              </div>
-            </div>
+            <FocusControl
+              appData={appData}
+              durationType="break"
+              durationTime={appData.breakDurationTime}
+              setAppData={setAppData}
+            />
           </div>
         </div>
       </div>
