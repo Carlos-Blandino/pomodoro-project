@@ -13,85 +13,115 @@ function Pomodoro() {
     focusDurationTime: 25,
     breakDurationTime: 5,
     timerStatus: "stop",
-    focusTimeRemaining: 25,
-    breakTimeRemaining: 5,
+    focusTimeRemaining: 25 * 60,
+    breakTimeRemaining: 5 * 60,
     durationType: "focus",
     sessionLable: "Focusing",
     currentTime: 0,
+    timeRemaining: 0,
+    durationTime: 25,
   };
   const [appData, setAppData] = useState({ ...initialAppData });
 
   let tempData = { ...appData };
-
-  let durationTime = appData.focusDurationTime;
-  let timeRemaining = appData.focusTimeRemaining;
 
   const handleStopButton = () => {
     tempData.timerStatus = "stop";
     setAppData({ ...initialAppData });
     setIsTimerRunning(false);
   };
-  let focusTime = 0;
-  let breakTime = 0;
-  let session = "focus";
-  // let focusTime = appData.focusTimeRemaining;
-  // let breakTime = appData.breakTimeRemaining;
 
-  //tempData.breakTimeRemaining = breakTime;
-  function printFocusToScreen(num) {
-    tempData.focusTimeRemaining = num;
-    setAppData({ ...tempData });
-    console.log("focus count", num);
-    if (num < 1) {
-      console.log("play sound 1");
-      session = "break";
-      focusTime = appData.focusTimeRemaining * 60;
-      tempData.focusTimeRemaining = focusTime;
-      tempData.sessionLable = "On Break";
-      setAppData({ ...tempData });
+  let totalTime = 0;
 
-      durationTime = appData.breakDurationTime;
-    }
-  }
-
-  function printBreakToScreen(num) {
-    tempData.breakTimeRemaining = num;
-
+  function printFocusToScreen(newNum) {
+    tempData.focusTimeRemaining = newNum;
+    tempData.timeRemaining = newNum;
     setAppData({ ...tempData });
 
-    console.log("break count", num);
-    if (num < 1) {
-      console.log("play sound 2");
-      session = "focus";
-      breakTime = appData.breakTimeRemaining * 60;
+    console.log("focus count", newNum);
+    if (newNum < 1) {
+      let session = "";
+      console.log("change to break");
+      let breakTime = 0;
+      breakTime = appData.breakDurationTime * 60;
       tempData.breakTimeRemaining = breakTime;
-      tempData.sessionLable = "Focusing";
+      tempData.timeRemaining = breakTime;
+      setAppData({ ...tempData });
+      // console.log("play sound 1");
+      session = "break";
+      tempData.durationType = session;
       setAppData({ ...tempData });
 
-      durationTime = appData.focusDurationTime;
+      tempData.sessionLable = "On Break";
+      //reassign focusing for label
+      tempData.durationTime = appData.breakDurationTime;
+      totalTime = 0;
+      tempData.currentTime = 0;
+
+      setAppData({ ...tempData });
     }
   }
 
-  let totalTime = appData.currentTime;
+  function printBreakToScreen(newNum) {
+    tempData.breakTimeRemaining = newNum;
+    tempData.timeRemaining = newNum;
+
+    setAppData({ ...tempData });
+
+    console.log("break count", newNum);
+    if (newNum < 1) {
+      let session = "";
+      console.log("change to focus");
+      let focusTime = 0;
+      //   console.log("play sound 2");
+      session = "focus";
+      tempData.durationType = session;
+      setAppData({ ...tempData });
+      console.log("duration type from break func", appData.durationType);
+
+      focusTime = appData.focusDurationTime * 60;
+      tempData.focusTimeRemaining = focusTime;
+
+      tempData.timeRemaining = focusTime;
+
+      tempData.sessionLable = "Focusing";
+      //reassign focusing for label
+      tempData.durationTime = appData.focusDurationTime;
+
+      tempData.currentTime = 0;
+      totalTime = 0;
+      setAppData({ ...tempData });
+    }
+  }
+
   useInterval(
     () => {
       // ToDo: Implement what should happen when the timer is running
-
+      let session = appData.durationType;
       if (session === "focus") {
+        let focusTime = 0;
+        console.log("in focus");
         focusTime = appData.focusTimeRemaining;
         focusTime -= 1;
+
         totalTime++;
+
+        //
         tempData.currentTime = totalTime;
-        console.log("total time", tempData.currentTime);
+
+        // console.log("total time", tempData.currentTime);
         setAppData({ ...tempData });
-
         printFocusToScreen(focusTime);
-      }
-
-      if (session === "break") {
+      } else if (session === "break") {
+        let breakTime = 0;
+        console.log("in break");
         breakTime = appData.breakTimeRemaining;
         breakTime -= 1;
 
+        totalTime++;
+        tempData.currentTime = totalTime;
+        // console.log("total time", tempData.currentTime);
+        setAppData({ ...tempData });
         printBreakToScreen(breakTime);
       }
     },
@@ -100,7 +130,10 @@ function Pomodoro() {
 
   function playPause() {
     setIsTimerRunning((prevState) => !prevState);
+
     let tempData = { ...appData };
+    tempData.durationTime = appData.focusDurationTime;
+
     if (tempData.timerStatus === "stop") {
       tempData.timerStatus = "active";
     } else if (tempData.timerStatus === "active") {
@@ -115,7 +148,6 @@ function Pomodoro() {
     <div className="pomodoro">
       <FocusSetting
         appData={appData}
-        durationType="Focus"
         focusDurationTime={minutesToDuration(appData.focusDurationTime)}
         breakDurationTime={minutesToDuration(appData.breakDurationTime)}
         setAppData={setAppData}
@@ -169,12 +201,12 @@ function Pomodoro() {
           <div className="col">
             {/* TODO: Update message below to include current session (Focusing or On Break) and total duration */}
             <h2 data-testid="session-title">
-              {appData.sessionLable} for {minutesToDuration(durationTime)}{" "}
-              minutes
+              {appData.sessionLable} for{" "}
+              {minutesToDuration(appData.durationTime)} minutes
             </h2>
             {/* TODO: Update message below to include time remaining in the current session */}
             <p className="lead" data-testid="session-sub-title">
-              {secondsToDuration(timeRemaining)} remaining
+              {secondsToDuration(appData.timeRemaining)} remaining
             </p>
             <h3
               style={{
@@ -195,7 +227,9 @@ function Pomodoro() {
                 aria-valuemax="100"
                 aria-valuenow={appData.currentTime} // TODO: Increase aria-valuenow as elapsed time increases
                 style={{
-                  width: `${(appData.currentTime / durationTime) * 100}%`,
+                  width: `${
+                    (appData.currentTime / appData.durationTime) * 100
+                  }%`,
                 }} // TODO: Increase width % as elapsed time increases
               />
             </div>

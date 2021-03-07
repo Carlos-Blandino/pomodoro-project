@@ -11,28 +11,38 @@ function FocusSetting({
   function handleFocusInsrease(event) {
     tempData.focusDurationTime = tempData.focusDurationTime + 5;
     const numRange = Math.min(60, tempData.focusDurationTime);
+    tempData.durationTime = numRange;
     tempData.focusDurationTime = numRange;
+    tempData.focusTimeRemaining = numRange * 60;
+
     setAppData({ ...tempData });
   }
 
   function handleFocusDecrease(event) {
     tempData.focusDurationTime = tempData.focusDurationTime - 5;
     const numRange = Math.max(5, tempData.focusDurationTime);
+    tempData.durationTime = numRange;
     tempData.focusDurationTime = numRange;
+    tempData.focusTimeRemaining = numRange * 60;
+
     setAppData({ ...tempData });
   }
 
   function handleBreakIncrease(event) {
     tempData.breakDurationTime = tempData.breakDurationTime + 1;
     const numRange = Math.min(15, tempData.breakDurationTime);
+    tempData.durationTime = numRange;
     tempData.breakDurationTime = numRange;
+    tempData.breakTimeRemaining = numRange * 60;
     setAppData({ ...tempData });
   }
 
   function handleBreakDecrease(event) {
     tempData.breakDurationTime = tempData.breakDurationTime - 1;
     const numRange = Math.max(1, tempData.breakDurationTime);
+    tempData.durationTime = numRange;
     tempData.breakDurationTime = numRange;
+    tempData.breakTimeRemaining = numRange * 60;
     setAppData({ ...tempData });
   }
 
