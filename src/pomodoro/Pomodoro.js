@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import FocusSetting from "../focus-setting/FocusSetting";
 import classNames from "../utils/class-names";
 import { minutesToDuration } from "../utils/duration";
+import { secondsToDuration } from "../utils/duration";
 import useInterval from "../utils/useInterval";
-import Session from "../session/Session";
 
 function Pomodoro() {
   // Timer starts out paused
@@ -13,11 +13,23 @@ function Pomodoro() {
     focusDurationTime: 25,
     breakDurationTime: 5,
     timerStatus: "stop",
+    timeRemaining: 25 * 60,
+    durationType: "focus",
   };
 
   const handlePlayButton = () => {
-    tempData.timerStatus = "active";
-    setAppData({ ...tempData });
+    // tempData.timerStatus = "active";
+    // switch (tempData.timerStatus) {
+    //   case "active":
+    //     tempData.durationType = "pause";
+    //     break;
+    //   case "pause":
+    //     tempData.durationType = "active";
+    //     break;
+    //   default:
+    //     tempData.durationType = "stop";
+    // }
+    // setAppData({ ...tempData });
   };
 
   const handleStopButton = () => {
@@ -28,12 +40,23 @@ function Pomodoro() {
 
   const [appData, setAppData] = useState({ ...initialAppData });
   let num = 0;
-  const tempData = { ...appData };
+  let tempData = { ...appData };
 
   useInterval(
     () => {
       // ToDo: Implement what should happen when the timer is running
-      console.log(num++);
+      if (appData.timeRemaining > 0) {
+        const tempData = { ...appData };
+        let countDown = appData.timeRemaining - 1;
+        tempData.timeRemaining = countDown;
+        setAppData({ ...tempData });
+      } else {
+        const tempData = { ...appData };
+        tempData.timeRemaining = countDown;
+        let countDown = appData.timeRemaining - 1;
+        tempData.timeRemaining = countDown;
+        setAppData({ ...tempData });
+      }
     },
     isTimerRunning ? 1000 : null
   );
@@ -53,35 +76,8 @@ function Pomodoro() {
         testId="duration-focus"
         decrease="decrease-focus"
         increase="increase-focus"
+        timerStatus={appData.timerStatus}
       />
-
-      {/* <div className="row">
-        <div className="col">
-          <FocusSetting
-            appData={appData}
-            durationType="Focus"
-            durationTime={minutesToDuration(appData.focusDurationTime)}
-            setAppData={setAppData}
-            testId="duration-focus"
-            decrease="decrease-focus"
-            increase="increase-focus"
-          />
-        </div>
-        <div className="col">
-          <div className="float-right">
-            <FocusSetting
-              appData={appData}
-              durationType="Break"
-              durationTime={minutesToDuration(appData.breakDurationTime)}
-              setAppData={setAppData}
-              testId="duration-break"
-              decrease="decrease-break"
-              increase="increase-break"
-            />
-          </div>
-        </div>
-      </div>
-      */}
       <div className="row">
         <div className="col">
           <div
@@ -116,7 +112,42 @@ function Pomodoro() {
           </div>
         </div>
       </div>
-      <Session timerStatus={appData.timerStatus} />
+
+      <div
+        style={{
+          visibility: appData.timerStatus === "stop" ? "hidden" : "visible",
+        }}
+      >
+        {/* TODO: This area should show only when a focus or break session is running or pauses */}
+        <div className="row mb-2">
+          <div className="col">
+            {/* TODO: Update message below to include current session (Focusing or On Break) and total duration */}
+            <h2 data-testid="session-title">
+              Focusing for {minutesToDuration(appData.focusDurationTime)}{" "}
+              minutes
+            </h2>
+            {/* TODO: Update message below to include time remaining in the current session */}
+            <p className="lead" data-testid="session-sub-title">
+              {secondsToDuration(appData.timeRemaining)} remaining
+            </p>
+          </div>
+        </div>
+        <div className="row mb-2">
+          <div className="col">
+            <div className="progress" style={{ height: "20px" }}>
+              <div
+                className="progress-bar"
+                role="progressbar"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0" // TODO: Increase aria-valuenow as elapsed time increases
+                style={{ width: "0%" }} // TODO: Increase width % as elapsed time increases
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* <Session timerStatus={appData.timerStatus} /> */}
     </div>
   );
 }
