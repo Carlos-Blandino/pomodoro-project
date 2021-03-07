@@ -13,11 +13,25 @@ function Pomodoro() {
     focusDurationTime: 25,
     breakDurationTime: 5,
     timerStatus: "stop",
-    timeRemaining: 25 * 60,
+    focusTimeRemaining: 25,
+    breakTimeRemaining: 5,
     durationType: "focus",
+    sessionLable: "Focusing",
   };
+  const [appData, setAppData] = useState({ ...initialAppData });
+
+  let tempData = { ...appData };
+
+  let durationTime = appData.focusDurationTime;
+  let timeRemaining = appData.focusTimeRemaining;
 
   const handlePlayButton = () => {
+    console.log(appData.timerStatus);
+    tempData.timerStatus = "pause";
+    setAppData({ ...tempData });
+    if (tempData.timerStatus === "active") {
+    }
+
     // tempData.timerStatus = "active";
     // switch (tempData.timerStatus) {
     //   case "active":
@@ -37,32 +51,101 @@ function Pomodoro() {
     setAppData({ ...initialAppData });
     setIsTimerRunning(false);
   };
+  let focusTime = 0;
+  let breakTime = 0;
+  let session = "focus";
+  // let focusTime = appData.focusTimeRemaining;
+  // let breakTime = appData.breakTimeRemaining;
 
-  const [appData, setAppData] = useState({ ...initialAppData });
-  let num = 0;
-  let tempData = { ...appData };
+  //tempData.breakTimeRemaining = breakTime;
+  function printFocusToScreen(num) {
+    tempData.focusTimeRemaining = num;
+    setAppData({ ...tempData });
+    console.log("focus count", num);
+    if (num < 1) {
+      console.log("play sound 1");
+      session = "break";
+      focusTime = appData.focusTimeRemaining * 60;
+      tempData.focusTimeRemaining = focusTime;
+      tempData.sessionLable = "On Break";
+      setAppData({ ...tempData });
 
+      durationTime = appData.breakDurationTime;
+    }
+  }
+
+  function printBreakToScreen(num) {
+    tempData.breakTimeRemaining = num;
+
+    setAppData({ ...tempData });
+
+    console.log("break count", num);
+    if (num < 1) {
+      console.log("play sound 2");
+      session = "focus";
+      breakTime = appData.breakTimeRemaining * 60;
+      tempData.breakTimeRemaining = breakTime;
+      tempData.sessionLable = "Focusing";
+      setAppData({ ...tempData });
+
+      durationTime = appData.focusDurationTime;
+    }
+  }
+
+  let totalTime = tempData.focusTimeRemaining + tempData.breakDurationTime;
   useInterval(
     () => {
-      // ToDo: Implement what should happen when the timer is running
-      if (appData.timeRemaining > 0) {
-        const tempData = { ...appData };
-        let countDown = appData.timeRemaining - 1;
-        tempData.timeRemaining = countDown;
-        setAppData({ ...tempData });
-      } else {
-        const tempData = { ...appData };
-        tempData.timeRemaining = countDown;
-        let countDown = appData.timeRemaining - 1;
-        tempData.timeRemaining = countDown;
-        setAppData({ ...tempData });
+      if (session === "focus") {
+        focusTime = appData.focusTimeRemaining;
+        focusTime -= 1;
+
+        printFocusToScreen(focusTime);
       }
+
+      if (session === "break") {
+        breakTime = appData.breakTimeRemaining;
+        breakTime -= 1;
+
+        printBreakToScreen(breakTime);
+      }
+      // ToDo: Implement what should happen when the timer is running
+
+      // if (appData.focusTimeRemaining > 0) {
+      //   tempData = { ...appData };
+      //   let countDown = appData.focusTimeRemaining - 1;
+
+      //   tempData.focusTimeRemaining = countDown;
+      //   console.log(tempData.focusTimeRemaining);
+      //   setAppData({ ...tempData });
+      // } else if (appData.breakTimeRemaining > 0) {
+      //   tempData.sessionLable = "On Break";
+      //   let countDown = appData.breakTimeRemaining - 1;
+      //   tempData.focusTimeRemaining = countDown;
+      //   setAppData({ ...tempData });
+      //   console.log("play sound");
+      // } else {
+      //   console.log("play sound 2");
+      //   tempData.focusTimeRemaining = tempData.focusDurationTime;
+      //   tempData.breakTimeRemaining = tempData.breakDurationTime;
+      //   tempData.sessionLable = "Focusing";
+      //   setAppData({ ...tempData });
+      // }
     },
     isTimerRunning ? 1000 : null
   );
 
   function playPause() {
     setIsTimerRunning((prevState) => !prevState);
+    let tempData = { ...appData };
+    if (tempData.timerStatus === "stop") {
+      tempData.timerStatus = "active";
+    } else if (tempData.timerStatus === "active") {
+      tempData.timerStatus = "pause";
+    } else {
+      tempData.timerStatus = "active";
+    }
+    setAppData({ ...tempData });
+    console.log(appData.timerStatus);
   }
 
   return (
@@ -98,7 +181,7 @@ function Pomodoro() {
                   "oi-media-play": !isTimerRunning,
                   "oi-media-pause": isTimerRunning,
                 })}
-                onClick={handlePlayButton}
+                //onClick={handlePlayButton}
               />
             </button>
             {/* TODO: Implement stopping the current focus or break session and disable when there is no active session */}
@@ -123,13 +206,20 @@ function Pomodoro() {
           <div className="col">
             {/* TODO: Update message below to include current session (Focusing or On Break) and total duration */}
             <h2 data-testid="session-title">
-              Focusing for {minutesToDuration(appData.focusDurationTime)}{" "}
+              {appData.sessionLable} for {minutesToDuration(durationTime)}{" "}
               minutes
             </h2>
             {/* TODO: Update message below to include time remaining in the current session */}
             <p className="lead" data-testid="session-sub-title">
-              {secondsToDuration(appData.timeRemaining)} remaining
+              {secondsToDuration(timeRemaining)} remaining
             </p>
+            <h3
+              style={{
+                display: appData.timerStatus === "pause" ? "block" : "none",
+              }}
+            >
+              PAUSED
+            </h3>
           </div>
         </div>
         <div className="row mb-2">
