@@ -17,6 +17,7 @@ function Pomodoro() {
     breakTimeRemaining: 5,
     durationType: "focus",
     sessionLable: "Focusing",
+    currentTime: 0,
   };
   const [appData, setAppData] = useState({ ...initialAppData });
 
@@ -24,27 +25,6 @@ function Pomodoro() {
 
   let durationTime = appData.focusDurationTime;
   let timeRemaining = appData.focusTimeRemaining;
-
-  const handlePlayButton = () => {
-    console.log(appData.timerStatus);
-    tempData.timerStatus = "pause";
-    setAppData({ ...tempData });
-    if (tempData.timerStatus === "active") {
-    }
-
-    // tempData.timerStatus = "active";
-    // switch (tempData.timerStatus) {
-    //   case "active":
-    //     tempData.durationType = "pause";
-    //     break;
-    //   case "pause":
-    //     tempData.durationType = "active";
-    //     break;
-    //   default:
-    //     tempData.durationType = "stop";
-    // }
-    // setAppData({ ...tempData });
-  };
 
   const handleStopButton = () => {
     tempData.timerStatus = "stop";
@@ -92,12 +72,18 @@ function Pomodoro() {
     }
   }
 
-  let totalTime = tempData.focusTimeRemaining + tempData.breakDurationTime;
+  let totalTime = appData.currentTime;
   useInterval(
     () => {
+      // ToDo: Implement what should happen when the timer is running
+
       if (session === "focus") {
         focusTime = appData.focusTimeRemaining;
         focusTime -= 1;
+        totalTime++;
+        tempData.currentTime = totalTime;
+        console.log("total time", tempData.currentTime);
+        setAppData({ ...tempData });
 
         printFocusToScreen(focusTime);
       }
@@ -108,28 +94,6 @@ function Pomodoro() {
 
         printBreakToScreen(breakTime);
       }
-      // ToDo: Implement what should happen when the timer is running
-
-      // if (appData.focusTimeRemaining > 0) {
-      //   tempData = { ...appData };
-      //   let countDown = appData.focusTimeRemaining - 1;
-
-      //   tempData.focusTimeRemaining = countDown;
-      //   console.log(tempData.focusTimeRemaining);
-      //   setAppData({ ...tempData });
-      // } else if (appData.breakTimeRemaining > 0) {
-      //   tempData.sessionLable = "On Break";
-      //   let countDown = appData.breakTimeRemaining - 1;
-      //   tempData.focusTimeRemaining = countDown;
-      //   setAppData({ ...tempData });
-      //   console.log("play sound");
-      // } else {
-      //   console.log("play sound 2");
-      //   tempData.focusTimeRemaining = tempData.focusDurationTime;
-      //   tempData.breakTimeRemaining = tempData.breakDurationTime;
-      //   tempData.sessionLable = "Focusing";
-      //   setAppData({ ...tempData });
-      // }
     },
     isTimerRunning ? 1000 : null
   );
@@ -145,7 +109,6 @@ function Pomodoro() {
       tempData.timerStatus = "active";
     }
     setAppData({ ...tempData });
-    console.log(appData.timerStatus);
   }
 
   return (
@@ -230,8 +193,10 @@ function Pomodoro() {
                 role="progressbar"
                 aria-valuemin="0"
                 aria-valuemax="100"
-                aria-valuenow="0" // TODO: Increase aria-valuenow as elapsed time increases
-                style={{ width: "0%" }} // TODO: Increase width % as elapsed time increases
+                aria-valuenow={appData.currentTime} // TODO: Increase aria-valuenow as elapsed time increases
+                style={{
+                  width: `${(appData.currentTime / durationTime) * 100}%`,
+                }} // TODO: Increase width % as elapsed time increases
               />
             </div>
           </div>
