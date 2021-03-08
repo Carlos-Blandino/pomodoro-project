@@ -18,8 +18,9 @@ function Pomodoro() {
     durationType: "focus",
     sessionLable: "Focusing",
     currentTime: 0,
-    timeRemaining: 0,
+    timeRemaining: 25 * 60,
     durationTime: 25,
+    percent: 0,
   };
   const [appData, setAppData] = useState({ ...initialAppData });
 
@@ -31,31 +32,25 @@ function Pomodoro() {
     setIsTimerRunning(false);
   };
 
-  let totalTime = 0;
-
   function printFocusToScreen(newNum) {
     tempData.focusTimeRemaining = newNum;
     tempData.timeRemaining = newNum;
     setAppData({ ...tempData });
-
-    console.log("focus count", newNum);
     if (newNum < 1) {
+      new Audio(`https://bigsoundbank.com/UPLOAD/mp3/1482.mp3`).play();
       let session = "";
-      console.log("change to break");
       let breakTime = 0;
       breakTime = appData.breakDurationTime * 60;
       tempData.breakTimeRemaining = breakTime;
       tempData.timeRemaining = breakTime;
       setAppData({ ...tempData });
-      // console.log("play sound 1");
       session = "break";
       tempData.durationType = session;
       setAppData({ ...tempData });
-
       tempData.sessionLable = "On Break";
       //reassign focusing for label
       tempData.durationTime = appData.breakDurationTime;
-      totalTime = 0;
+
       tempData.currentTime = 0;
 
       setAppData({ ...tempData });
@@ -68,28 +63,21 @@ function Pomodoro() {
 
     setAppData({ ...tempData });
 
-    console.log("break count", newNum);
     if (newNum < 1) {
+      new Audio(`https://bigsoundbank.com/UPLOAD/mp3/1482.mp3`).play();
       let session = "";
-      console.log("change to focus");
       let focusTime = 0;
-      //   console.log("play sound 2");
       session = "focus";
       tempData.durationType = session;
       setAppData({ ...tempData });
-      console.log("duration type from break func", appData.durationType);
-
       focusTime = appData.focusDurationTime * 60;
       tempData.focusTimeRemaining = focusTime;
-
       tempData.timeRemaining = focusTime;
-
       tempData.sessionLable = "Focusing";
       //reassign focusing for label
       tempData.durationTime = appData.focusDurationTime;
-
       tempData.currentTime = 0;
-      totalTime = 0;
+
       setAppData({ ...tempData });
     }
   }
@@ -100,27 +88,24 @@ function Pomodoro() {
       let session = appData.durationType;
       if (session === "focus") {
         let focusTime = 0;
-        console.log("in focus");
         focusTime = appData.focusTimeRemaining;
         focusTime -= 1;
+        tempData.currentTime++;
 
-        totalTime++;
-
-        //
-        tempData.currentTime = totalTime;
-
-        // console.log("total time", tempData.currentTime);
+        tempData.percent = Math.ceil(
+          (tempData.currentTime * 60) / ((tempData.durationTime * 60) / 1.6)
+        );
+        console.log("percent", tempData.percent);
         setAppData({ ...tempData });
+
         printFocusToScreen(focusTime);
       } else if (session === "break") {
         let breakTime = 0;
-        console.log("in break");
         breakTime = appData.breakTimeRemaining;
         breakTime -= 1;
+        tempData.currentTime++;
+        setAppData({ ...tempData });
 
-        totalTime++;
-        tempData.currentTime = totalTime;
-        // console.log("total time", tempData.currentTime);
         setAppData({ ...tempData });
         printBreakToScreen(breakTime);
       }
@@ -130,7 +115,6 @@ function Pomodoro() {
 
   function playPause() {
     setIsTimerRunning((prevState) => !prevState);
-
     let tempData = { ...appData };
     tempData.durationTime = appData.focusDurationTime;
 
@@ -225,11 +209,10 @@ function Pomodoro() {
                 role="progressbar"
                 aria-valuemin="0"
                 aria-valuemax="100"
-                aria-valuenow={appData.currentTime} // TODO: Increase aria-valuenow as elapsed time increases
+                aria-valuenow={appData.percent}
+                // TODO: Increase aria-valuenow as elapsed time increases
                 style={{
-                  width: `${
-                    (appData.currentTime / appData.durationTime) * 100
-                  }%`,
+                  width: `${appData.percent}%`,
                 }} // TODO: Increase width % as elapsed time increases
               />
             </div>

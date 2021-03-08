@@ -8,7 +8,7 @@ function FocusSetting({
   timerStatus,
 }) {
   const tempData = { ...appData };
-  function handleFocusInsrease(event) {
+  function handleFocusInsrease() {
     tempData.focusDurationTime = tempData.focusDurationTime + 5;
     const numRange = Math.min(60, tempData.focusDurationTime);
     tempData.durationTime = numRange;
@@ -18,7 +18,7 @@ function FocusSetting({
     setAppData({ ...tempData });
   }
 
-  function handleFocusDecrease(event) {
+  function handleFocusDecrease() {
     tempData.focusDurationTime = tempData.focusDurationTime - 5;
     const numRange = Math.max(5, tempData.focusDurationTime);
     tempData.durationTime = numRange;
@@ -28,7 +28,7 @@ function FocusSetting({
     setAppData({ ...tempData });
   }
 
-  function handleBreakIncrease(event) {
+  function handleBreakIncrease() {
     tempData.breakDurationTime = tempData.breakDurationTime + 1;
     const numRange = Math.min(15, tempData.breakDurationTime);
     tempData.durationTime = numRange;
@@ -37,7 +37,7 @@ function FocusSetting({
     setAppData({ ...tempData });
   }
 
-  function handleBreakDecrease(event) {
+  function handleBreakDecrease() {
     tempData.breakDurationTime = tempData.breakDurationTime - 1;
     const numRange = Math.max(1, tempData.breakDurationTime);
     tempData.durationTime = numRange;
