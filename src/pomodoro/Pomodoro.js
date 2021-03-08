@@ -90,21 +90,17 @@ function Pomodoro() {
         focusTime = appData.focusTimeRemaining;
         focusTime -= 1;
         tempData.currentTime++;
-
-        tempData.percent = Math.ceil(
-          (tempData.currentTime * 60) / ((tempData.durationTime * 60) / 1.6)
-        );
-        console.log("percent", tempData.percent);
+        tempData.percent =
+          (tempData.currentTime * 60) / ((tempData.durationTime * 60) / 1.7);
         setAppData({ ...tempData });
-
         printFocusToScreen(focusTime);
       } else if (session === "break") {
         let breakTime = 0;
         breakTime = appData.breakTimeRemaining;
         breakTime -= 1;
         tempData.currentTime++;
-        setAppData({ ...tempData });
-
+        tempData.percent =
+          (tempData.currentTime * 60) / ((tempData.durationTime * 60) / 1.7);
         setAppData({ ...tempData });
         printBreakToScreen(breakTime);
       }
@@ -114,6 +110,7 @@ function Pomodoro() {
 
   function playPause() {
     setIsTimerRunning((prevState) => !prevState);
+
     let tempData = { ...appData };
     tempData.durationTime = appData.focusDurationTime;
 
