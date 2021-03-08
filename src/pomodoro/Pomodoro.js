@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import FocusSetting from "../focus-setting/FocusSetting";
-import classNames from "../utils/class-names";
 import { minutesToDuration } from "../utils/duration";
-import { secondsToDuration } from "../utils/duration";
 import useInterval from "../utils/useInterval";
-
+import Session from "../session/Session";
+import Control from "../control/control";
 function Pomodoro() {
   // Timer starts out paused
   const [isTimerRunning, setIsTimerRunning] = useState(false);
@@ -140,86 +139,14 @@ function Pomodoro() {
         increase="increase-focus"
         timerStatus={appData.timerStatus}
       />
-      <div className="row">
-        <div className="col">
-          <div
-            className="btn-group btn-group-lg mb-2"
-            role="group"
-            aria-label="Timer controls"
-          >
-            <button
-              type="button"
-              className="btn btn-primary"
-              data-testid="play-pause"
-              title="Start or pause timer"
-              onClick={playPause}
-            >
-              <span
-                className={classNames({
-                  oi: true,
-                  "oi-media-play": !isTimerRunning,
-                  "oi-media-pause": isTimerRunning,
-                })}
-                //onClick={handlePlayButton}
-              />
-            </button>
-            {/* TODO: Implement stopping the current focus or break session and disable when there is no active session */}
-            <button
-              type="button"
-              className="btn btn-secondary"
-              title="Stop the session"
-            >
-              <span className="oi oi-media-stop" onClick={handleStopButton} />
-            </button>
-          </div>
-        </div>
-      </div>
 
-      <div
-        style={{
-          visibility: appData.timerStatus === "stop" ? "hidden" : "visible",
-        }}
-      >
-        {/* TODO: This area should show only when a focus or break session is running or pauses */}
-        <div className="row mb-2">
-          <div className="col">
-            {/* TODO: Update message below to include current session (Focusing or On Break) and total duration */}
-            <h2 data-testid="session-title">
-              {appData.sessionLable} for{" "}
-              {minutesToDuration(appData.durationTime)} minutes
-            </h2>
-            {/* TODO: Update message below to include time remaining in the current session */}
-            <p className="lead" data-testid="session-sub-title">
-              {secondsToDuration(appData.timeRemaining)} remaining
-            </p>
-            <h3
-              style={{
-                display: appData.timerStatus === "pause" ? "block" : "none",
-              }}
-            >
-              PAUSED
-            </h3>
-          </div>
-        </div>
-        <div className="row mb-2">
-          <div className="col">
-            <div className="progress" style={{ height: "20px" }}>
-              <div
-                className="progress-bar"
-                role="progressbar"
-                aria-valuemin="0"
-                aria-valuemax="100"
-                aria-valuenow={appData.percent}
-                // TODO: Increase aria-valuenow as elapsed time increases
-                style={{
-                  width: `${appData.percent}%`,
-                }} // TODO: Increase width % as elapsed time increases
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* <Session timerStatus={appData.timerStatus} /> */}
+      <Control
+        handleStopButton={handleStopButton}
+        isTimerRunning={isTimerRunning}
+        playPause={playPause}
+      />
+
+      <Session appData={appData} />
     </div>
   );
 }
