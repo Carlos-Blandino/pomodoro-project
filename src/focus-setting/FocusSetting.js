@@ -8,42 +8,41 @@ function FocusSetting({
   timerStatus,
 }) {
   const tempData = { ...appData };
-  function handleFocusInsrease() {
-    tempData.focusDurationTime = tempData.focusDurationTime + 5;
-    const numRange = Math.min(60, tempData.focusDurationTime);
+
+  function handleFocusTempData(numRange) {
     tempData.durationTime = numRange;
     tempData.focusDurationTime = numRange;
     tempData.focusTimeRemaining = numRange * 60;
-
     setAppData({ ...tempData });
+  }
+  function handleFocusIncrease() {
+    tempData.focusDurationTime = tempData.focusDurationTime + 5;
+    const numRange = Math.min(60, tempData.focusDurationTime);
+    handleFocusTempData(numRange);
   }
 
   function handleFocusDecrease() {
     tempData.focusDurationTime = tempData.focusDurationTime - 5;
     const numRange = Math.max(5, tempData.focusDurationTime);
-    tempData.durationTime = numRange;
-    tempData.focusDurationTime = numRange;
-    tempData.focusTimeRemaining = numRange * 60;
-
-    setAppData({ ...tempData });
+    handleFocusTempData(numRange);
   }
 
-  function handleBreakIncrease() {
-    tempData.breakDurationTime = tempData.breakDurationTime + 1;
-    const numRange = Math.min(15, tempData.breakDurationTime);
+  function handleBreakTempData(numRange) {
     tempData.durationTime = numRange;
     tempData.breakDurationTime = numRange;
     tempData.breakTimeRemaining = numRange * 60;
     setAppData({ ...tempData });
+  }
+  function handleBreakIncrease() {
+    tempData.breakDurationTime = tempData.breakDurationTime + 1;
+    const numRange = Math.min(15, tempData.breakDurationTime);
+    handleBreakTempData(numRange);
   }
 
   function handleBreakDecrease() {
     tempData.breakDurationTime = tempData.breakDurationTime - 1;
     const numRange = Math.max(1, tempData.breakDurationTime);
-    tempData.durationTime = numRange;
-    tempData.breakDurationTime = numRange;
-    tempData.breakTimeRemaining = numRange * 60;
-    setAppData({ ...tempData });
+    handleBreakTempData(numRange);
   }
 
   return (
@@ -68,7 +67,7 @@ function FocusSetting({
               type="button"
               className="btn btn-secondary"
               data-testid="increase-focus"
-              onClick={handleFocusInsrease}
+              onClick={handleFocusIncrease}
               disabled={timerStatus === "stop" ? false : true}
             >
               <span className="oi oi-plus" />

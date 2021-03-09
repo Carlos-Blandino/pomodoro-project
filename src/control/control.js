@@ -23,16 +23,16 @@ function Control({ playPause, isTimerRunning, handleStopButton }) {
                 "oi-media-play": !isTimerRunning,
                 "oi-media-pause": isTimerRunning,
               })}
-              //onClick={handlePlayButton}
             />
           </button>
-          {/* TODO: Implement stopping the current focus or break session and disable when there is no active session */}
+
           <button
             type="button"
             className="btn btn-secondary"
             title="Stop the session"
+            onClick={handleStopButton}
           >
-            <span className="oi oi-media-stop" onClick={handleStopButton} />
+            <span className="oi oi-media-stop" />
           </button>
         </div>
       </div>
