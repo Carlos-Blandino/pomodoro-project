@@ -2,3 +2,4 @@ node_modules
 .qualified-attach.json
 .vercel
 build
+.idea
